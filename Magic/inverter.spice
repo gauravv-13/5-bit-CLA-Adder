@@ -1,0 +1,26 @@
+* SPICE3 file created from inverter.ext - technology: scmos
+.include TSMC_180nm.txt
+.param SUPPLY=1.8
+.option scale=0.09u
+.global gnd vdd
+
+
+M1000 out in vdd w_n8_n5# CMOSP w=8 l=2
++  ad=40p pd=26u as=40p ps=26u
+M1001 out in gnd Gnd CMOSN w=4 l=2
++  ad=20p pd=18u as=20p ps=18u
+C0 w_n8_n5# vdd 5.452f
+C1 w_n8_n5# out 1.316f
+C2 gnd 0 5.452f 
+C3 out 0 3.196f 
+C4 in 0 8.322f 
+
+Vdd vdd gnd 'SUPPLY'
+Vin in gnd PULSE(0 {SUPPLY} 0n 0n 0n 10n 20n)
+
+.tran 0.1n 200n
+.control
+run
+plot v(in) v(out)
+.endc
+.end

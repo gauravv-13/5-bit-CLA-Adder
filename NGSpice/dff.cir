@@ -1,0 +1,85 @@
+.include TSMC_180nm.txt
+.param vdd=1.8
+.param LAMBDA=0.09u
+.param width_N={10*LAMBDA}
+.param width_P={2*width_N}
+.global vdd gnd
+
+Vdd vdd 0 {Vdd}
+Vclk clk 0 PULSE(0 vdd 0 100p 100p 5n 10n)
+Vd d 0 PULSE(0 vdd 2n 100p 100p 20n 40n)
+
+.subckt inv out in width_N={width_N} width_P={width_P}
+Mpu out in vdd vdd CMOSP W={width_P} L={2*LAMBDA}
++ AS={5*width_P*LAMBDA} PS={10*LAMBDA+2*width_P}
++ AD={5*width_P*LAMBDA} PD={10*LAMBDA+2*width_P}
+
+Mpd out in gnd gnd CMOSN W={width_N} L={2*LAMBDA}
++ AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N}
++ AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+.ends inv
+
+.subckt dflipflop q D clk X Y width_N={width_N} width_P={width_P}
+M1 X D gnd gnd CMOSN W={width_N} L={2*LAMBDA}
++ AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N}
++ AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+
+M2 X clk S1 vdd CMOSP W={width_P} L={2*LAMBDA}
++ AS={5*width_P*LAMBDA} PS={10*LAMBDA+2*width_P}
++ AD={5*width_P*LAMBDA} PD={10*LAMBDA+2*width_P}
+
+M3 S1 D vdd vdd CMOSP W={width_P} L={2*LAMBDA}
++ AS={5*width_P*LAMBDA} PS={10*LAMBDA+2*width_P}
++ AD={5*width_P*LAMBDA} PD={10*LAMBDA+2*width_P}
+
+M4 S2 clk gnd gnd CMOSN W={width_N} L={2*LAMBDA}
++ AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N}
++ AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+
+M5 Y X S2 gnd CMOSN W={width_N} L={2*LAMBDA}
++ AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N}
++ AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+
+M6 Y clk vdd vdd CMOSP W={width_P} L={2*LAMBDA}
++ AS={5*width_P*LAMBDA} PS={10*LAMBDA+2*width_P}
++ AD={5*width_P*LAMBDA} PD={10*LAMBDA+2*width_P}
+
+M7 S3 Y gnd gnd CMOSN W={width_N} L={2*LAMBDA}
++ AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N}
++ AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+
+M8 S3 clk Qbar gnd CMOSN W={width_N} L={2*LAMBDA}
++ AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N}
++ AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+
+M9 Qbar Y vdd vdd CMOSP W={width_P} L={2*LAMBDA}
++ AS={5*width_P*LAMBDA} PS={10*LAMBDA+2*width_P}
++ AD={5*width_P*LAMBDA} PD={10*LAMBDA+2*width_P}
+
+xinv1 q qbar inv width_N={width_N} width_P={width_P}
+.ends dflipflop
+
+
+xdff1 q d clk X Y dflipflop width_N={1*width_N} width_P={width_P}
+
+.ic v(q)=0
+.tran 1ps 100ns
+
+.measure tran t_rise TRIG V(q) VAL='0.18' RISE=1 TARG V(q) VAL='1.62' RISE=1
+.measure tran t_fall TRIG V(q) VAL='1.62' FALL=1 TARG V(q) VAL='0.18' FALL=1
+.measure tran tpd_ave param='(t_rise + t_fall)/2'
+.measure tran tcq_rise TRIG V(clk) VAL='0.9' RISE=1 TARG V(q) VAL='0.9' RISE=1
+
+.meas tran tHfall TRIG v(clk) VAL=0.9 RISE=1 TARG v(Y) VAL=0.9 FALL=1
+.meas tran tHrise TRIG v(clk) VAL=0.9 FALL=1 TARG v(Y) VAL=0.9 RISE=1
+.measure tran tH param='(tHfall + tHrise)/2'
+
+.meas tran tSUfall TRIG v(D) VAL=0.9 RISE=1 TARG v(X) VAL=0.9 FALL=1
+.meas tran tSUrise TRIG v(D) VAL=0.9 FALL=1 TARG v(X) VAL=0.9 RISE=1
+.measure tran tSU param='(tSUfall + trise)/2'
+
+.control
+run
+plot clk+4 d+2 q
+print tHfall tHrise
+.endc

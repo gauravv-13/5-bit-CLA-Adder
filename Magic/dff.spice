@@ -1,0 +1,102 @@
+* SPICE3 file created from dff.ext - technology: scmos
+
+.include TSMC_180nm.txt
+.param SUPPLY=1.8
+.option scale=0.09u
+.global gnd vdd
+
+M1000 a_107_n4# a_83_n40# vdd w_70_n13# CMOSP w=20 l=2
++  ad=59.999996p pd=26u as=100p ps=50u
+M1001 a_152_n4# a_134_n35# vdd w_70_n13# CMOSP w=20 l=2
++  ad=100p pd=50u as=100p ps=50u
+M1002 a_83_n4# d vdd w_70_n13# CMOSP w=20 l=2
++  ad=59.999996p pd=26u as=100p ps=50u
+M1003 a_177_n4# clk a_177_n40# Gnd CMOSN w=20 l=2
++  ad=100p pd=50u as=70p ps=27u
+M1004 a_107_n40# clk a_107_n4# w_70_n13# CMOSP w=20 l=2
++  ad=100p pd=50u as=59.999996p ps=26u
+M1005 a_177_n4# a_152_n4# vdd w_70_n13# CMOSP w=20 l=2
++  ad=100p pd=50u as=100p ps=50u
+M1006 a_152_n40# a_134_n35# gnd Gnd CMOSN w=20 l=2
++  ad=70p pd=27u as=100p ps=50u
+M1007 a_83_n40# d gnd Gnd CMOSN w=20 l=2
++  ad=100p pd=50u as=100p ps=50u
+M1008 q a_177_n4# gnd Gnd CMOSN w=4 l=2
++  ad=20p pd=18u as=20p ps=18u
+M1009 a_107_n40# a_83_n40# gnd Gnd CMOSN w=20 l=2
++  ad=100p pd=50u as=100p ps=50u
+M1010 q a_177_n4# vdd w_70_n13# CMOSP w=8 l=2
++  ad=40p pd=26u as=40p ps=26u
+M1011 a_134_n35# a_107_n40# gnd Gnd CMOSN w=12 l=2
++  ad=59.999996p pd=34u as=59.999996p ps=34u
+M1012 a_177_n40# a_152_n4# gnd Gnd CMOSN w=20 l=2
++  ad=70p pd=27u as=100p ps=50u
+M1013 a_134_n35# a_107_n40# vdd w_70_n13# CMOSP w=20 l=2
++  ad=100p pd=50u as=100p ps=50u
+M1014 a_83_n40# clk a_83_n4# w_70_n13# CMOSP w=20 l=2
++  ad=100p pd=50u as=59.999996p ps=26u
+M1015 a_152_n4# clk a_152_n40# Gnd CMOSN w=20 l=2
++  ad=100p pd=50u as=70p ps=27u
+
+C0 vdd a_83_n4# 3.39e-20
+C1 a_107_n40# gnd 8.06e-19
+C2 w_70_n13# q 0.009304f
+C3 clk a_177_n4# 0.00129f
+C4 d gnd 0.001735f
+C5 a_134_n35# vdd 0.368591f
+C6 a_107_n40# a_134_n35# 0.060071f
+C7 clk vdd 0.00145f
+C8 clk a_107_n40# 0.00994f
+C9 w_70_n13# a_152_n4# 0.048845f
+C10 d clk 0.090648f
+C11 w_70_n13# a_83_n40# 0.038399f
+C12 gnd a_177_n40# 7.93e-20
+C13 a_177_n4# q 0.059586f
+C14 vdd q 0.082476f
+C15 vdd a_107_n4# 3.39e-20
+C16 a_134_n35# gnd 0.001769f
+C17 clk gnd 0.850501f
+C18 a_152_n4# vdd 0.272248f
+C19 a_83_n40# vdd 0.231455f
+C20 w_70_n13# a_177_n4# 0.042313f
+C21 w_70_n13# vdd 0.145966f
+C22 clk a_134_n35# 0.025899f
+C23 a_83_n40# a_107_n40# 0.042328f
+C24 d a_83_n40# 0.042328f
+C25 w_70_n13# a_107_n40# 0.039032f
+C26 w_70_n13# d 0.026447f
+C27 gnd q 0.082499f
+C28 a_152_n4# gnd 0.001791f
+C29 vdd a_177_n4# 0.230487f
+C30 a_83_n40# gnd 0.001791f
+C31 a_107_n40# vdd 0.143088f
+C32 clk a_152_n4# 0.027231f
+C33 d vdd 0.001694f
+C34 clk a_83_n40# 0.100588f
+C35 w_70_n13# a_134_n35# 0.036933f
+C36 w_70_n13# clk 0.052988f
+C37 gnd a_152_n40# 7.93e-20
+C38 a_177_n4# gnd 0.05691f
+C39 q 0 0.078044f
+C40 gnd 0 0.51569f
+C41 a_177_n4# 0 0.282025f
+C42 vdd 0 0.593184f
+C43 a_152_n4# 0 0.258703f
+C44 a_134_n35# 0 0.23983f
+C45 a_107_n40# 0 0.300514f
+C46 a_83_n40# 0 0.233677f
+C47 clk 0 1.25248f
+C48 d 0 0.156917f
+C49 w_70_n13# 0 5.57542f
+
+Vdd vdd gnd 'SUPPLY'
+Vd d gnd PULSE(0 {SUPPLY} 5ns 0ns 0n 8n 16n)
+Vclk clk gnd PULSE(0 {SUPPLY} 4n 0n 0n 10n 20n)
+
+.tran 0.1n 40n
+.control
+run
+plot v(d) v(clk)-2 v(q)-4
+
+.endc
+.end

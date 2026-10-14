@@ -1,0 +1,47 @@
+* SPICE3 file created from nandgate.ext - technology: scmos
+
+.include TSMC_180nm.txt
+.param SUPPLY=1.8
+.option scale=0.09u
+.global gnd vdd
+
+M1000 out b a_8_16# Gnd CMOSN w=4 l=2
++  ad=24p pd=20u as=12p ps=10u
+M1001 vdd b out w_n7_37# CMOSP w=8 l=2
++  ad=40p pd=26u as=24p ps=14u
+M1002 a_8_16# a gnd Gnd CMOSN w=4 l=2
++  ad=12p pd=10u as=24p ps=20u
+M1003 out a vdd w_n7_37# CMOSP w=8 l=2
++  ad=24p pd=14u as=40p ps=26u
+C0 gnd a_8_16# 1.36e-19
+C1 a out 0.060476f
+C2 b vdd 0.025664f
+C3 w_n7_37# b 0.022346f
+C4 out gnd 0.041283f
+C5 a gnd 0.025259f
+C6 b out 0.102213f
+C7 w_n7_37# vdd 0.016581f
+C8 a b 0.117087f
+C9 out a_8_16# 1.14e-19
+C10 vdd out 0.192467f
+C11 b gnd 9.68e-19
+C12 w_n7_37# out 0.007871f
+C13 a vdd 0.002099f
+C14 w_n7_37# a 0.02227f
+C15 gnd 0 0.151976f
+C16 out 0 0.088265f
+C17 vdd 0 0.156538f
+C18 b 0 0.159568f
+C19 a 0 0.165487f
+C20 w_n7_37# 0 0.723168f
+
+Vdd vdd gnd 'SUPPLY'
+Va a gnd PULSE(0 {SUPPLY} 0n 0n 0n 10n 20n)
+Vb b gnd PULSE(0 {SUPPLY} 5n 0n 0n 10n 20n)
+
+.tran 0.1n 200n
+.control
+run
+plot v(a) v(b)-2 v(out)-4
+.endc
+.end

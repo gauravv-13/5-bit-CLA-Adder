@@ -1,0 +1,140 @@
+.include TSMC_180nm.txt
+.include "gates.cir"
+.param vdd=1.8
+.param LAMBDA=0.09u
+.param width_N={10*LAMBDA}
+.param width_P={2*width_N}
+.global vdd gnd
+Vdd vdd gnd DC {vdd}
+
+.subckt dflipflop q D clk width_N={width_N} width_P={width_P}
+M1 X D gnd gnd CMOSN W={width_N} L={2*LAMBDA}
++ AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N}
++ AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+
+M2 X clk S1 vdd CMOSP W={width_P} L={2*LAMBDA}
++ AS={5*width_P*LAMBDA} PS={10*LAMBDA+2*width_P}
++ AD={5*width_P*LAMBDA} PD={10*LAMBDA+2*width_P}
+
+M3 S1 D vdd vdd CMOSP W={width_P} L={2*LAMBDA}
++ AS={5*width_P*LAMBDA} PS={10*LAMBDA+2*width_P}
++ AD={5*width_P*LAMBDA} PD={10*LAMBDA+2*width_P}
+
+M4 S2 clk gnd gnd CMOSN W={width_N} L={2*LAMBDA}
++ AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N}
++ AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+
+M5 Y X S2 gnd CMOSN W={width_N} L={2*LAMBDA}
++ AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N}
++ AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+
+M6 Y clk vdd vdd CMOSP W={width_P} L={2*LAMBDA}
++ AS={5*width_P*LAMBDA} PS={10*LAMBDA+2*width_P}
++ AD={5*width_P*LAMBDA} PD={10*LAMBDA+2*width_P}
+
+M7 S3 Y gnd gnd CMOSN W={width_N} L={2*LAMBDA}
++ AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N}
++ AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+
+M8 S3 clk Qbar gnd CMOSN W={width_N} L={2*LAMBDA}
++ AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N}
++ AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+
+M9 Qbar Y vdd vdd CMOSP W={width_P} L={2*LAMBDA}
++ AS={5*width_P*LAMBDA} PS={10*LAMBDA+2*width_P}
++ AD={5*width_P*LAMBDA} PD={10*LAMBDA+2*width_P}
+
+xinv1 q qbar inv width_N={width_N} width_P={width_P}
+.ends dflipflop
+
+*PGBLOCK
+.subckt pgblock P G A B width_N={width_N} width_P={width_P}
+xpg_xor P A B xorgate width_N={width_N} width_P={width_P}
+xpg_and G A B andgate width_N={width_N} width_P={width_P}
+.ends pgblock
+
+
+*CLABLOCK
+.subckt clablock Cout P G Cin width_N={width_N} width_P={width_P}
+xcl_and mid1 P Cin andgate width_N={width_N} width_P={width_P}
+xcl_or Cout G mid1 orgate width_N={width_N} width_P={width_P}
+.ends clablock
+
+*SUMBLOCK
+.subckt sumblock S P Cin width_N={width_N} width_P={width_P}
+xsum_xor S P Cin xorgate width_N={width_N} width_P={width_P}
+.ends sumblock
+
+***** INPUT PULSES *****
+Va0i a0i gnd 1.8
+Va1i a1i gnd 0
+Va2i a2i gnd 1.8
+Va3i a3i gnd 0
+Va4i a4i gnd 1.8
+
+Vb0i b0i gnd 0
+Vb1i b1i gnd 0
+Vb2i b2i gnd 0
+Vb3i b3i gnd 1.8
+Vb4i b4i gnd 1.8
+
+
+
+***** INPUT DFFs â a0..a4, b0..b4 *****
+x_ff_a0 a0 a0i clk dflipflop width_N={width_N} width_P={width_P}
+x_ff_a1 a1 a1i clk dflipflop width_N={width_N} width_P={width_P}
+x_ff_a2 a2 a2i clk dflipflop width_N={width_N} width_P={width_P}
+x_ff_a3 a3 a3i clk dflipflop width_N={width_N} width_P={width_P}
+x_ff_a4 a4 a4i clk dflipflop width_N={width_N} width_P={width_P}
+
+x_ff_b0 b0 b0i clk dflipflop width_N={width_N} width_P={width_P}
+x_ff_b1 b1 b1i clk dflipflop width_N={width_N} width_P={width_P}
+x_ff_b2 b2 b2i clk dflipflop width_N={width_N} width_P={width_P}
+x_ff_b3 b3 b3i clk dflipflop width_N={width_N} width_P={width_P}
+x_ff_b4 b4 b4i clk dflipflop width_N={width_N} width_P={width_P}
+
+***** PG BLOCKS *****
+xpg0 p0 g0 a0 b0 pgblock width_N={width_N} width_P={width_P}
+xpg1 p1 g1 a1 b1 pgblock width_N={width_N} width_P={width_P}
+xpg2 p2 g2 a2 b2 pgblock width_N={width_N} width_P={width_P}
+xpg3 p3 g3 a3 b3 pgblock width_N={width_N} width_P={width_P}
+xpg4 p4 g4 a4 b4 pgblock width_N={width_N} width_P={width_P}
+
+***** CLA BLOCKS *****
+xcla0 c1 p0 g0 gnd clablock width_N={width_N} width_P={width_P}
+xcla1 c2 p1 g1 c1 clablock width_N={width_N} width_P={width_P}
+xcla2 c3 p2 g2 c2 clablock width_N={width_N} width_P={width_P}
+xcla3 c4 p3 g3 c3 clablock width_N={width_N} width_P={width_P}
+xcla4 c5 p4 g4 c4 clablock width_N={width_N} width_P={width_P}
+
+***** SUM BLOCKS *****
+xsum0 s0 p0 gnd sumblock width_N={width_N} width_P={width_P}
+xsum1 s1 p1 c1 sumblock width_N={width_N} width_P={width_P}
+xsum2 s2 p2 c2 sumblock width_N={width_N} width_P={width_P}
+xsum3 s3 p3 c3 sumblock width_N={width_N} width_P={width_P}
+xsum4 s4 p4 c4 sumblock width_N={width_N} width_P={width_P}
+
+***** OUTPUT DFFs â s0o..s4o *****
+x_ff_s0 s0o s0 clk dflipflop width_N={width_N} width_P={width_P}
+x_ff_s1 s1o s1 clk dflipflop width_N={width_N} width_P={width_P}
+x_ff_s2 s2o s2 clk dflipflop width_N={width_N} width_P={width_P}
+x_ff_s3 s3o s3 clk dflipflop width_N={width_N} width_P={width_P}
+x_ff_s4 s4o s4 clk dflipflop width_N={width_N} width_P={width_P}
+x_ff_s5 c5o c5 clk dflipflop width_N={width_N} width_P={width_P}
+
+
+Vclk clk gnd PULSE(0 1.8 20n 0n 0n 100n 200n)
+
+.measure tran tpd_rise TRIG v(clk) VAL='0.5*vdd' RISE=1 TARG v(s0) VAL='0.5*vdd' RISE=1
+
+.tran 0.1n 40n
+.control
+run
+plot v(a0i) v(b0i)-2 v(clk)-4 v(a0)-6 v(b0)-8 v(s0)-10 v(c1)-12
+plot v(a1i) v(b1i)-2 v(clk)-4 v(a1)-6 v(b1)-8 v(s1)-10 v(c2)-12
+plot v(a2i) v(b2i)-2 v(clk)-4 v(a2)-6 v(b2)-8 v(s2)-10 v(c3)-12
+plot v(a3i) v(b3i)-2 v(clk)-4 v(a3)-6 v(b3)-8 v(s3)-10 v(c4)-12
+plot v(a4i) v(b4i)-2 v(clk)-4 v(a4)-6 v(b4)-8 v(s4)-10 v(c5)-12
+print 
+.endc
+.end

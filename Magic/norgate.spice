@@ -1,0 +1,47 @@
+* SPICE3 file created from norgate.ext - technology: scmos
+
+.include TSMC_180nm.txt
+.param SUPPLY=1.8
+.option scale=0.09u
+.global gnd vdd
+
+M1000 a_15_36# a vdd w_0_30# CMOSP w=8 l=2
++  ad=40p pd=18u as=40p ps=26u
+M1001 out b a_15_36# w_0_30# CMOSP w=8 l=2
++  ad=40p pd=26u as=40p ps=18u
+M1002 out a gnd Gnd CMOSN w=4 l=2
++  ad=20p pd=14u as=24p ps=20u
+M1003 gnd b out Gnd CMOSN w=4 l=2
++  ad=24p pd=20u as=20p ps=14u
+C0 out gnd 0.129787f
+C1 vdd out 0.027503f
+C2 b gnd 0.001694f
+C3 w_0_30# out 0.00792f
+C4 b vdd 8.87e-19
+C5 w_0_30# b 0.02276f
+C6 b a_15_36# 1.13e-20
+C7 a out 0.001854f
+C8 w_0_30# vdd 0.008846f
+C9 a b 0.015753f
+C10 vdd a_15_36# 1.13e-19
+C11 a gnd 0.025259f
+C12 b out 0.116512f
+C13 a vdd 0.002099f
+C14 w_0_30# a 0.022744f
+C15 gnd 0 0.176612f
+C16 out 0 0.100563f
+C17 vdd 0 0.161351f
+C18 b 0 0.212944f
+C19 a 0 0.221605f
+C20 w_0_30# 0 0.80352f
+
+Vdd vdd gnd 'SUPPLY'
+Va a gnd PULSE(0 {SUPPLY} 0n 0n 0n 10n 20n)
+Vb b gnd PULSE(0 {SUPPLY} 5n 0n 0n 10n 20n)
+
+.tran 0.1n 200n
+.control
+run
+plot v(a) v(b)-2 v(out)-4
+.endc
+.end

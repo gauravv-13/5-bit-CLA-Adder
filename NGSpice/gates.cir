@@ -1,0 +1,83 @@
+.include TSMC_180nm.txt
+.param vdd=1.8
+.param LAMBDA=0.09u
+.param width_N={10*LAMBDA}
+.param width_P={2*width_N}
+.global vdd gnd
+
+.subckt inv out in width_N={width_N} width_P={width_P}
+Mpu out in vdd vdd CMOSP L={2*LAMBDA} W={width_P}
++ AS={5*width_P*LAMBDA} PS={10*LAMBDA+2*width_P}
++ AD={5*width_P*LAMBDA} PD={10*LAMBDA+2*width_P}
+
+Mpd out in gnd gnd CMOSN L={2*LAMBDA} W={width_N}
++ AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N}
++ AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+.ends inv
+
+.subckt nandgate out a b width_N={width_N} width_P={width_P}
+Mp1 out a vdd vdd CMOSP L={2*LAMBDA} W={width_P}
++ AS={5*width_P*LAMBDA} PS={10*LAMBDA+2*width_P}
++ AD={5*width_P*LAMBDA} PD={10*LAMBDA+2*width_P}
+
+Mp2 out b vdd vdd CMOSP L={2*LAMBDA} W={width_P}
++ AS={5*width_P*LAMBDA} PS={10*LAMBDA+2*width_P}
++ AD={5*width_P*LAMBDA} PD={10*LAMBDA+2*width_P}
+
+Mn1 out a mid gnd CMOSN L={2*LAMBDA} W={width_N}
++ AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N}
++ AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+
+Mn2 mid b gnd gnd CMOSN L={2*LAMBDA} W={width_N}
++ AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N}
++ AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+.ends nandgate
+
+.subckt norgate out a b width_N={width_N} width_P={width_P}
+Mp1 mid a vdd vdd CMOSP L={2*LAMBDA} W={width_P}
++ AS={5*width_P*LAMBDA} PS={10*LAMBDA+2*width_P}
++ AD={5*width_P*LAMBDA} PD={10*LAMBDA+2*width_P}
+
+Mp2 out b mid vdd CMOSP L={2*LAMBDA} W={width_P}
++ AS={5*width_P*LAMBDA} PS={10*LAMBDA+2*width_P}
++ AD={5*width_P*LAMBDA} PD={10*LAMBDA+2*width_P}
+
+Mn1 out a gnd gnd CMOSN L={2*LAMBDA} W={width_N}
++ AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N}
++ AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+
+Mn2 out b gnd gnd CMOSN L={2*LAMBDA} W={width_N}
++ AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N}
++ AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+.ends norgate
+
+.subckt xorgate out a b width_N={width_N} width_P={width_P}
+xinv1 abar a inv width_N={width_N} width_P={width_P}
+xinv2 bbar b inv width_N={width_N} width_P={width_P}
+
+Mp1 out abar bbar vdd CMOSP L={2*LAMBDA} W={width_P}
++ AS={5*width_P*LAMBDA} PS={10*LAMBDA+2*width_P}
++ AD={5*width_P*LAMBDA} PD={10*LAMBDA+2*width_P}
+
+Mn1 out a bbar gnd CMOSN L={2*LAMBDA} W={width_N}
++ AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N}
++ AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+
+Mp2 out a b vdd CMOSP L={2*LAMBDA} W={width_P}
++ AS={5*width_P*LAMBDA} PS={10*LAMBDA+2*width_P}
++ AD={5*width_P*LAMBDA} PD={10*LAMBDA+2*width_P}
+
+Mn2 out abar b gnd CMOSN L={2*LAMBDA} W={width_N}
++ AS={5*width_N*LAMBDA} PS={10*LAMBDA+2*width_N}
++ AD={5*width_N*LAMBDA} PD={10*LAMBDA+2*width_N}
+.ends xorgate
+
+.subckt andgate out a b width_N={width_N} width_P={width_P}
+x1 outbar a b nandgate width_N={width_N} width_P={width_P}
+x2 out outbar inv width_N={width_N} width_P={width_P}
+.ends andgate
+
+.subckt orgate out a b width_N={width_N} width_P={width_P}
+x1 outbar a b norgate width_N={width_N} width_P={width_P}
+x2 out outbar inv width_N={width_N} width_P={width_P}
+.ends orgate

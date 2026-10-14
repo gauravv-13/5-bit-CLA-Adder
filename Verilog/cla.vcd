@@ -1,0 +1,79 @@
+$date
+	Wed Oct 14 10:34:08 2026
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ns
+$end
+$scope module cla_tb $end
+$var wire 5 ! sum [4:0] $end
+$var wire 1 " cout $end
+$var wire 6 # c_all [5:0] $end
+$var reg 5 $ a [4:0] $end
+$var reg 5 % b [4:0] $end
+$var reg 1 & cin $end
+$scope module uut $end
+$var wire 5 ' a [4:0] $end
+$var wire 5 ( b [4:0] $end
+$var wire 1 & cin $end
+$var wire 5 ) sum [4:0] $end
+$var wire 5 * p [4:0] $end
+$var wire 5 + g [4:0] $end
+$var wire 1 " cout $end
+$var wire 5 , c_for_sum [4:0] $end
+$var wire 6 - c_all [5:0] $end
+$var wire 5 . c [5:1] $end
+$scope module cla $end
+$var wire 1 & cin $end
+$var wire 5 / p [4:0] $end
+$var wire 5 0 g [4:0] $end
+$var wire 1 " cout $end
+$var wire 5 1 c [5:1] $end
+$upscope $end
+$scope module pg $end
+$var wire 5 2 a [4:0] $end
+$var wire 5 3 b [4:0] $end
+$var wire 5 4 g [4:0] $end
+$var wire 5 5 p [4:0] $end
+$upscope $end
+$scope module sg $end
+$var wire 5 6 c [4:0] $end
+$var wire 5 7 p [4:0] $end
+$var wire 5 8 s [4:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+$end
+#0
+$dumpvars
+b11111 8
+b11111 7
+b0 6
+b11111 5
+b0 4
+b1010 3
+b10101 2
+b0 1
+b0 0
+b11111 /
+b0 .
+b0 -
+b0 ,
+b0 +
+b11111 *
+b11111 )
+b1010 (
+b10101 '
+0&
+b1010 %
+b10101 $
+b0 #
+0"
+b11111 !
+$end
+#10

@@ -1,0 +1,67 @@
+* SPICE3 file created from xor_tg.ext - technology: scmos
+
+.include TSMC_180nm.txt
+.param SUPPLY=1.8
+.option scale=0.09u
+.global gnd vdd
+
+M1000 bbar b vdd w_n66_n2# CMOSP w=8 l=2
++  ad=40p pd=26u as=40p ps=26u
+M1001 out bbar abar w_n66_n2# CMOSP w=8 l=2
++  ad=48p pd=28u as=56p ps=30u
+M1002 abar a vdd w_n66_n2# CMOSP w=8 l=2
++  ad=40p pd=26u as=40p ps=26u
+M1003 out b abar Gnd CMOSN w=8 l=2
++  ad=56p pd=30u as=56p ps=30u
+M1004 out b a w_n66_n2# CMOSP w=8 l=2
++  ad=64p pd=32u as=48p ps=28u
+M1005 bbar b gnd Gnd CMOSN w=4 l=2
++  ad=20p pd=18u as=20p ps=18u
+M1006 abar a gnd Gnd CMOSN w=4 l=2
++  ad=20p pd=18u as=20p ps=18u
+M1007 out bbar a Gnd CMOSN w=8 l=2
++  ad=64p pd=32u as=48p ps=28u
+
+C0 abar gnd 0.192489f
+C1 out abar 0.433163f
+C2 a vdd 0.029106f
+C3 b gnd 0.002421f
+C4 w_n66_n2# vdd 0.086562f
+C5 bbar abar 0.002665f
+C6 b out 0.0183f
+C7 w_n66_n2# a 0.071354f
+C8 bbar b 0.324243f
+C9 a gnd 0.001614f
+C10 a out 0.577332f
+C11 bbar vdd 0.123737f
+C12 b abar 0.065322f
+C13 w_n66_n2# out 0.039704f
+C14 bbar a 0.014301f
+C15 w_n66_n2# bbar 0.041973f
+C16 abar vdd 0.123737f
+C17 a abar 0.22304f
+C18 bbar gnd 0.041238f
+C19 b vdd 0.001614f
+C20 w_n66_n2# abar 0.018621f
+C21 b a 0.008561f
+C22 bbar out 0.016185f
+C23 w_n66_n2# b 0.051829f
+C24 gnd 0 0.162141f
+C25 vdd 0 0.144649f
+C26 abar 0 0.395682f
+C27 out 0 0.258923f
+C28 a 0 0.601255f
+C29 b 0 1.06194f
+C30 bbar 0 2.03452f
+C31 w_n66_n2# 0 2.88765f
+
+Vdd vdd gnd 'SUPPLY'
+Va a gnd PULSE(0 {SUPPLY} 0n 0n 0n 10n 20n)
+Vb b gnd PULSE(0 {SUPPLY} 5n 0n 0n 10n 20n)
+
+.tran 0.1n 40n
+.control
+run
+plot v(a) v(b)-2 v(out)-4
+.endc
+.end
