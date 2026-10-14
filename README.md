@@ -3,7 +3,24 @@
 A 5-bit **Carry Look-Ahead (CLA) adder** designed end to end: transistor-level schematics in **NGSPICE**, full-custom layout in **MAGIC** (180 nm, SCMOS rules), post-layout extraction, structural **Verilog** with simulation, and implementation on **FPGA** (Basys 3 / Nexys A7).
 
 > Course project for **VLSI Design**, Monsoon 2025, IIIT Hyderabad (Prof. Abhishek Srivastava, CVEST).
-> The full problem statement is in [`course_project_vlsid2025.pdf`](course_project_vlsid2025.pdf).
+> 📄 **[Read the full project report (PDF)](docs/report.pdf)** · Problem statement: [`course_project_vlsid2025.pdf`](course_project_vlsid2025.pdf)
+
+<p align="center">
+  <img src="docs/images/final_layout.png" width="650" alt="Full-custom MAGIC layout of the complete 5-bit CLA adder">
+  <br><em>Full-custom MAGIC layout of the complete registered 5-bit CLA adder</em>
+</p>
+
+## Key Results
+
+| Metric | Pre-layout | Post-layout |
+|---|---|---|
+| Clock → S0 delay | **325.6 ps** | **414.9 ps** |
+| D-FF clock-to-Q (rising) | 25.6 ps | — |
+| D-FF hold time | 52.9 ps | — |
+| D-FF setup time (fall / rise) | 25.0 ps / 30.5 ps | — |
+| D-FF Q rise / fall time | 91.6 ps / 261.4 ps | — |
+
+Functionality was confirmed at every level: NGSPICE, post-layout extraction, Icarus Verilog, and on FPGA hardware with an oscilloscope.
 
 ---
 
@@ -30,6 +47,11 @@ The adder is pipelined between input and output registers. Operands are latched 
 | Carry | c<sub>i+1</sub> = g<sub>i</sub> + p<sub>i</sub> · c<sub>i</sub> |
 | Sum | s<sub>i</sub> = p<sub>i</sub> ⊕ c<sub>i</sub> |
 
+<p align="center">
+  <img src="docs/images/cla_schematic.jpg" width="420" alt="Gate-level schematic of the 5-bit CLA">
+  <br><em>Gate-level structure: P/G (XOR + AND), carry (AND-OR) and sum (XOR) per bit</em>
+</p>
+
 In the Verilog model each carry is fully expanded in terms of `p`, `g` and `cin`. For example:
 
 ```
@@ -55,7 +77,56 @@ c5 = g4 + p4·g3 + p4·p3·g2 + p4·p3·p2·g1 + p4·p3·p2·p1·g0 + p4·p3·p2
 | Sum block | XOR per bit |
 | D flip-flop | TSPC (true single-phase clock), positive-edge triggered, plus an output inverter |
 
+The TSPC flip-flop has three stages driven by a single clock. The input is sampled while the clock is low and held when it goes high. The output stage precharges during the low phase and evaluates during the high phase, which makes the flip-flop positive-edge triggered without needing a complementary clock.
+
 The flip-flop testbench measures **clock-to-Q delay, setup time and hold time** using `.measure` statements.
+
+---
+
+## Results
+
+### D flip-flop (TSPC)
+
+<p align="center">
+  <img src="docs/images/dff_sim.png" width="520" alt="TSPC D flip-flop transient simulation">
+  <img src="docs/images/dff_timing.png" width="420" alt="D flip-flop timing measurements">
+</p>
+
+### Layout (MAGIC, SCN6M_DEEP.09)
+
+| Inverter | NAND | NOR |
+|:-:|:-:|:-:|
+| <img src="docs/images/layout_inverter.png" width="200"> | <img src="docs/images/layout_nand.png" width="200"> | <img src="docs/images/layout_nor.png" width="200"> |
+
+| Transmission-gate XOR: layout | Transmission-gate XOR: stick diagram |
+|:-:|:-:|
+| <img src="docs/images/layout_xor.png" width="380"> | <img src="docs/images/xor_stick.png" width="380"> |
+
+### Full adder: pre-layout vs. post-layout
+
+Test case: **A = 10101, B = 11000** (cin = 0), simulated in the registered adder. Each panel shows one bit position (inputs, flip-flop outputs, sum and carry).
+
+**Pre-layout (schematic netlist)**
+![Pre-layout simulation](docs/images/prelayout_sim.png)
+
+**Post-layout (extracted from `finalcircuit.mag`)**
+![Post-layout simulation](docs/images/postlayout_sim.png)
+
+The sum outputs agree before and after layout. Parasitic R/C from extraction raises the clock-to-S0 delay from 325.6 ps to 414.9 ps, about 27% higher, and makes the edges visibly softer.
+
+### Maximum clock frequency
+
+For a register-to-register path:
+
+```
+T_clk(min) = t_cq + t_CLA(max) + t_setup        f_max = 1 / T_clk(min)
+```
+
+### FPGA hardware (Keysight EDUX1052A oscilloscope)
+
+| S4 = 1 (≈ 3.4 V) | C5 = 0 (≈ 0.2 V) |
+|:-:|:-:|
+| <img src="docs/images/fpga_s4.png" width="400"> | <img src="docs/images/fpga_c5.png" width="400"> |
 
 ---
 
@@ -64,6 +135,9 @@ The flip-flop testbench measures **clock-to-Q delay, setup time and hold time** 
 ```
 .
 ├── course_project_vlsid2025.pdf   # Problem statement
+├── docs/
+│   ├── report.pdf                 # Full project report
+│   └── images/                    # Figures used in this README
 ├── NGSpice/                       # Pre-layout (schematic) simulation
 │   ├── gates.cir                  # INV, NAND, NOR, AND, OR, XOR subcircuits
 │   ├── dff.cir                    # TSPC D-FF with tcq / setup / hold measurements
@@ -174,9 +248,15 @@ Basys 3 mapping:
 2. John P. Hayes, *Computer Architecture and Organization*
 3. N. Weste and D. Harris, *CMOS VLSI Design*, 4th ed.
 4. S. Brown and Z. Vranesic, *Fundamentals of Digital Logic with Verilog Design*
+5. J. M. Rabaey, A. Chandrakasan and B. Nikolić, *Digital Integrated Circuits: A Design Perspective*, 2nd ed.
+6. J. Yuan and C. Svensson, "New single-clock CMOS latches and flip-flops with improved speed and power savings," *IEEE JSSC*, 1997
+
+## Acknowledgements
+
+Thanks to Prof. Abhishek Srivastava and the course Teaching Assistants for their guidance and support throughout the project.
 
 ---
 
 ## Author
 
-**Gaurav Reddy YV** · [@gauravv-13](https://github.com/gauravv-13)
+**Gaurav Reddy Yerreddi** · Electronics & Communication Engineering, IIIT Hyderabad · [@gauravv-13](https://github.com/gauravv-13)
